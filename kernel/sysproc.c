@@ -7,6 +7,18 @@
 #include "spinlock.h"
 #include "proc.h"
 
+//sys_trace实现
+uint64 sys_trace()
+{
+  int i = 0;
+  if (argint(0, &i) < 0)
+    return -1;
+
+  myproc()->mask = i;
+
+  return 0;
+}
+
 uint64
 sys_exit(void)
 {
