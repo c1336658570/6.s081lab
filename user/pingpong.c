@@ -11,7 +11,7 @@ int main(int argc, char *argv) {
     close(pfd1[1]);
     close(pfd2[0]);
     read(pfd1[0], &ch, 1);
-    printf("%d: received ping", getpid());
+    printf("%d: received ping\n", getpid());
     write(pfd2[1], &ch, 1);
     close(pfd1[0]);
     close(pfd2[1]);
@@ -21,7 +21,7 @@ int main(int argc, char *argv) {
     close(pfd2[1]);
     write(pfd1[1], &ch, 1);
     read(pfd2[0], &ch, 1);
-    printf("%d: received pong", getpid());
+    printf("%d: received pong\n", getpid());
     close(pfd1[1]);
     close(pfd2[0]);
   }
