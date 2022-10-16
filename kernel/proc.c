@@ -29,6 +29,21 @@ struct spinlock wait_lock;
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
+
+//统计空闲线程数量
+void freethreads(uint64 * pVal) {
+  struct proc *p;
+
+  *pVal = 0;
+  for (p = proc; p < &proc[NPROC]; p++)
+  {
+    if (p->state != UNUSED)
+    {
+      (*pVal)++;
+    }
+  }
+}
+
 void
 proc_mapstacks(pagetable_t kpgtbl) {
   struct proc *p;
@@ -302,9 +317,9 @@ fork(void)
     if(p->ofile[i])
       np->ofile[i] = filedup(p->ofile[i]);
   np->cwd = idup(p->cwd);
-  np->mask = p->mask; // 修改proc中的掩码
 
   safestrcpy(np->name, p->name, sizeof(p->name));
+  np->mask = p->mask; // 修改proc中的掩码
 
   pid = np->pid;
 

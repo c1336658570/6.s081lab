@@ -6,9 +6,29 @@
 #include "memlayout.h"
 #include "spinlock.h"
 #include "proc.h"
+#include "sysinfo.h"
+
+extern void freememory(uint64 * pVal);
+extern void freethreads(uint64 * pVal);
+
+//sys_sysinfo的实现
+uint64 sys_sysinfo(void){
+  struct sysinfo info;
+  
+  freememory(&info.freemem);
+  freethreads(&info.nproc);
+
+  uint64 addr;
+  struct proc *p = myproc();
+  argaddr(0, &addr);
+
+  if (copyout(p->pagetable, addr, (char *)&info, sizeof(info)) < 0)
+    return -1;
+  return 0;
+}
 
 //sys_trace实现
-uint64 sys_trace()
+uint64 sys_trace(void)
 {
   int i = 0;
   if (argint(0, &i) < 0)

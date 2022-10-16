@@ -23,6 +23,20 @@ struct {
   struct run *freelist;
 } kmem;
 
+//统计空闲内存数量
+void freememory(uint64 * pVal) {
+  struct run * r = kmem.freelist; 
+
+  *pVal = 0;
+  acquire(&kmem.lock);
+  while (r)
+  {
+    *pVal += PGSIZE;
+    r = r->next;
+  }
+  release(&kmem.lock);
+}
+
 void
 kinit()
 {

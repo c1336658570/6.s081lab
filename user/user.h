@@ -1,5 +1,6 @@
 struct stat;
 struct rtcdate;
+struct sysinfo; //声明sysinfo()函数用到的结构体sysinfo
 
 // system calls
 int fork(void);
@@ -24,6 +25,7 @@ char* sbrk(int);
 int sleep(int);
 int uptime(void);
 int trace(int); //trace声明
+int sysinfo(struct sysinfo *); //sysinfo函数声明
 
 // ulib.c
 int stat(const char*, struct stat*);
