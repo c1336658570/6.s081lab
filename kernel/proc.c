@@ -29,8 +29,11 @@ struct spinlock wait_lock;
 // Allocate a page for each process's kernel stack.
 // Map it high in memory, followed by an invalid
 // guard page.
+
+//为每个进程分配一个内核堆栈。调用 kvmmap 将每个堆栈映射到由 KSTACK 生成的虚拟地址，
+//从而为无效的堆栈保护页面留出空间。
 void
-proc_mapstacks(pagetable_t kpgtbl) {
+proc_mapstacks(pagetable_t kpgtbl) { 
   struct proc *p;
   
   for(p = proc; p < &proc[NPROC]; p++) {
@@ -44,7 +47,7 @@ proc_mapstacks(pagetable_t kpgtbl) {
 
 // initialize the proc table at boot time.
 void
-procinit(void)
+procinit(void) //为每个进程分配一个内核栈。它将每个栈映射到KSTACK生成的虚拟地址，这为无效的栈保护页面留下了空间.
 {
   struct proc *p;
   
@@ -169,7 +172,7 @@ freeproc(struct proc *p)
 // Create a user page table for a given process,
 // with no user memory, but with trampoline pages.
 pagetable_t
-proc_pagetable(struct proc *p)
+proc_pagetable(struct proc *p) //proc_pagetable分配一个没有用户映射的新页表
 {
   pagetable_t pagetable;
 
@@ -249,6 +252,10 @@ userinit(void)
 
 // Grow or shrink user memory by n bytes.
 // Return 0 on success, -1 on failure.
+// growproc根据n是正的还是负的调用uvmalloc或uvmdealloc
+// uvmalloc用kalloc分配物理内存，并用mappages将PTE添加到用户页表中。
+// uvmdealloc调用uvmunmap，uvmunmap使用walk来查找对应的PTE，
+// 并使用kfree来释放PTE引用的物理内存。
 int
 growproc(int n)
 {

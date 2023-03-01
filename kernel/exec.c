@@ -23,7 +23,7 @@ exec(char *path, char **argv)
 
   begin_op();
 
-  if((ip = namei(path)) == 0){
+  if((ip = namei(path)) == 0){ //使用namei打开指定的二进制path。然后，它读取ELF头。
     end_op();
     return -1;
   }
@@ -35,7 +35,7 @@ exec(char *path, char **argv)
   if(elf.magic != ELF_MAGIC)
     goto bad;
 
-  if((pagetable = proc_pagetable(p)) == 0)
+  if((pagetable = proc_pagetable(p)) == 0) //使用proc_pagetable分配一个没有用户映射的新页表
     goto bad;
 
   // Load program into memory.
@@ -49,12 +49,14 @@ exec(char *path, char **argv)
     if(ph.vaddr + ph.memsz < ph.vaddr)
       goto bad;
     uint64 sz1;
-    if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz)) == 0)
+    if((sz1 = uvmalloc(pagetable, sz, ph.vaddr + ph.memsz)) == 0) //使用uvmalloc为每个ELF段分配内存
       goto bad;
     sz = sz1;
     if((ph.vaddr % PGSIZE) != 0)
       goto bad;
-    if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0)
+    if(loadseg(pagetable, ph.vaddr, ip, ph.off, ph.filesz) < 0) //使用loadseg将每个段加载到内存中。loadseg使用walkaddr找到分配内存的物理地址，在该地址写入ELF段的每一页，并使用readi从文件中读取。
+
+
       goto bad;
   }
   iunlockput(ip);
@@ -137,7 +139,7 @@ loadseg(pagetable_t pagetable, uint64 va, struct inode *ip, uint offset, uint sz
 {
   uint i, n;
   uint64 pa;
-
+  //loadseg使用walkaddr找到分配内存的物理地址，在该地址写入ELF段的每一页，并使用readi从文件中读取。
   for(i = 0; i < sz; i += PGSIZE){
     pa = walkaddr(pagetable, va + i);
     if(pa == 0)

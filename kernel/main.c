@@ -16,9 +16,11 @@ main()
     printf("\n");
     printf("xv6 kernel is booting\n");
     printf("\n");
+    //初始化分配器
     kinit();         // physical page allocator
     kvminit();       // create kernel page table
     kvminithart();   // turn on paging
+    //为每个进程分配一个内核栈。它将每个栈映射到KSTACK生成的虚拟地址，这为无效的栈保护页面留下了空间。
     procinit();      // process table
     trapinit();      // trap vectors
     trapinithart();  // install kernel trap vector
